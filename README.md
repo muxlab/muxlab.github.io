@@ -18,5 +18,9 @@ Themes that we deal with are the below.
 ## Projects
 
 * [__GeoJSON Catalog Site for GitHub__](https://github.com/muxlab/geojson-catalog)
-* __Map Effects 100__ (Comming soon..)
+* [__Map Effects 100__](https://github.com/muxlab/map-effects-100)
 * __Graffiti Mapping Project in Tokyo__ (Comming soon..)
+
+## Contact
+
+Twitter: [@_muxlab](https://twitter.com/_muxlab)
