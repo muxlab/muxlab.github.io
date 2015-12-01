@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
+    <title>MUX Lab</title>
+    <link rel="shortcut icon" href="assets/img/favicon.ico">
+    <link rel="stylesheet" href="//cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+    <style>
+        html, body, #map {
+          height: 99%;
+          font-family: "Avenir LT W01 35 Light", "Century Gothic", Helvetica, Arial, sans-serif;
+        }
+        #title {
+          position: absolute;
+          z-index: 999;
+          top:40%;
+          left:50%;
+          width:100%;
+          margin:-1.5em 0 0 -50%;
+          color: #333;
+          text-align: center;
+        }
+        .btn {
+          border: 0;
+          color: #fff;
+          background-color: #20b2aa;
+          font-weight: 700;
+          margin: 5px;
+          padding: 6px 12px;
+          font-size: 14px;
+          line-height: 1.42857143;
+          text-align: center;
+          white-space: nowrap;
+          vertical-align: middle;
+          cursor: pointer;
+          background-image: none;
+        }
+        .btn-github {
+          background-color: #20b2aa;
+        }
+        .btn-github:hover {
+          background-color: #42ddd4;
+        }
+        .btn-twitter {
+          background-color: #55acee;
+        }
+        .btn-twitter:hover {
+          background-color: #55d2ee;
+        }
+
+        .leaflet-container {
+          background: rgba(0,0,0,0);
+        }
+
+        svg.leaflet-zoom-animated > g > path.japan-line {
+          /* CSS3 Transition to fade-in highlight style */
+          transition-property: fill, fill-opacity, stroke, stroke-opacity, stroke-width;
+          transition-duration: 0.4s;
+          /* for a border line generation */
+          stroke-dashoffset: 700;
+          stroke-dasharray: 700;
+          stroke-linecap: round;
+        }
+        svg.leaflet-zoom-animated > g > path.world-line {
+          /* CSS3 Transition to fade-in highlight style */
+          transition-property: fill, fill-opacity, stroke, stroke-opacity, stroke-width;
+          transition-duration: 0.4s;
+          /* for a border line generation */
+          stroke-dashoffset: 2500;
+          stroke-dasharray: 2500;
+          stroke-linecap: round;
+          opacity: 0;
+        }
+    </style>
+  </head>
+
+  <body>
+    <div id="title">
+      <h1>MUX Lab</h1>
+      <p><b>MUX</b> = <b>M</b>ap <b>U</b>ser <b>Ex</b>perience</p>
+      <p>We think about <b>UI/UX</b> of interactive maps.</p>
+      <button class="btn btn-github" onClick="showGitHub()">GitHub</button>
+      <button class="btn btn-twitter" onClick="showTwitter()">Twitter</button>
+    </div>
+    <div id="map"></div>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="//d3js.org/d3.v3.min.js"></script>
+    <script src="//cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+
+    <script>
+    $(function() {
+
+      console.log('%c⚛ muxlab.github.io: Hello geohacker! ⚛', 'font-family:monospace;font-size:16px;color:darkblue;');
+
+      var map, japan, world;
+
+      function initMap() {
+        map = L.map('map', { zoomControl: false, maxZoom: 5 }).setView([36, 139], 5);
+
+        var defaultStyleWorld = {
+          className: 'world-line',
+          color: '#2262CC',
+          weight: 1,
+          opacity: 0.6,
+          fillOpacity: 0
+        }
+
+        $.getJSON('data/world.geojson', function(data) {
+          world = L.geoJson(data, {
+            onEachFeature: function (feature, layer) {
+              layer.setStyle(defaultStyleWorld);
+              if(feature.properties['name'] === 'Japan') {
+                layer.setStyle({ opacity: 0 });
+              }
+            }
+          });
+          world.addTo(map);
+        });
+
+        var defaultStyle = {
+          className: 'japan-line',
+          color: '#ff6500',
+          weight: 1,
+          opacity: 0.6,
+          fillOpacity: 0
+        }
+        var highlightStyle = {
+          color: '#ff6500',
+          weight: 4,
+          opacity: 0.6,
+          fillOpacity: 0.65,
+          fillColor: '#ff6500'
+        };
+
+        $.getJSON('data/japan.geojson', function(data) {
+          japan = L.geoJson(data, {
+            onEachFeature: function (feature, layer) {
+              layer.setStyle(defaultStyle);
+
+              (function(layer, properties) {
+                layer.on('mouseover', function (e) {
+                  console.log('mouseover!');
+                  layer.setStyle(highlightStyle);
+                });
+                layer.on('mouseout', function (e) {
+                  layer.setStyle(defaultStyle);
+                });
+              })(layer, feature.properties);
+            }
+          });
+          map.fitBounds(japan.getBounds());
+          japan.addTo(map);
+
+          var japanPath = d3.selectAll('.leaflet-zoom-animated').selectAll('g').selectAll('path.japan-line');
+          var worldPath = d3.selectAll('.leaflet-zoom-animated').selectAll('g').selectAll('path.world-line');
+          japanPath.transition().delay(300).duration(7000).style('stroke-dashoffset', 0);
+          setTimeout(function() {
+            worldPath.transition().delay(300).duration(4000).style({ 'opacity': 0.8 });
+          }, 3800);
+          setTimeout(function() {
+            map.fitBounds(world.getBounds());
+            worldPath.transition().delay(300).duration(14000).style({ 'stroke-dashoffset': 0 });
+          }, 5800);
+          setTimeout(function() {
+            japanPath.style({ 'stroke-dasharray': 0 });
+            worldPath.style({ 'stroke-dasharray': 0 });
+          }, 19800);
+        });
+      }
+
+      initMap();
+
+    });
+    </script>
+
+    <script>
+    function showGitHub() {
+      location.href = 'https://github.com/muxlab';
+    }
+    function showTwitter() {
+      location.href = 'https://twitter.com/_muxlab';
+    }
+    </script>
+
+  </body>
+</html>
