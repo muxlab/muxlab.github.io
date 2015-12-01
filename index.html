@@ -157,7 +157,7 @@
           var worldPath = d3.selectAll('.leaflet-zoom-animated').selectAll('g').selectAll('path.world-line');
           japanPath.transition().delay(300).duration(7000).style('stroke-dashoffset', 0);
           setTimeout(function() {
-            worldPath.transition().delay(300).duration(4000).style({ 'opacity': 0.8 });
+            worldPath.transition().delay(300).duration(1000).style({ 'opacity': 0.8 });
           }, 3800);
           setTimeout(function() {
             map.fitBounds(world.getBounds());
