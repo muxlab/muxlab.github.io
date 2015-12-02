@@ -155,7 +155,6 @@
 
           var japanPath = d3.selectAll('.leaflet-zoom-animated').selectAll('g').selectAll('path.japan-line');
           var worldPath = d3.selectAll('.leaflet-zoom-animated').selectAll('g').selectAll('path.world-line');
-          japanPath.transition().delay(300).duration(7000).style('stroke-dashoffset', 0);
           setTimeout(function() {
             map.fitBounds(world.getBounds());
             worldPath.transition().style({ 'opacity': 0.8 });
@@ -165,6 +164,7 @@
             japanPath.style({ 'stroke-dasharray': 0 });
             worldPath.style({ 'stroke-dasharray': 0 });
           }, 19800);
+          japanPath.transition().delay(300).duration(7000).style('stroke-dashoffset', 0);
         });
       }
 
